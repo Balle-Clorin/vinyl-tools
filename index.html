@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vinyl Measurement Tools</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light}
+body{margin:0}
+/* Layout: a header with a faint record-groove motif, then a responsive grid of app cards grouped by measurement topic. */
+:root{
+  --bg:#f2f3ef;
+  --surface:#fbfbf9;
+  --fg:#15191b;
+  --muted:#5d676b;
+  --line:#d9dcd5;
+  --accent:#0d5c70;
+  --accent-fg:#ffffff;
+  --groove:#cfd4cb;
+  --font-display:"Schibsted Grotesk",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101415;--surface:#171d1f;--fg:#e8ecea;--muted:#93a0a4;--line:#2a3336;
+    --accent:#5cc0d8;--accent-fg:#0b1214;--groove:#202a2d;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101415;--surface:#171d1f;--fg:#e8ecea;--muted:#93a0a4;--line:#2a3336;
+  --accent:#5cc0d8;--accent-fg:#0b1214;--groove:#202a2d;color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:var(--font-display);font-size:16px;line-height:1.5;
+  padding-block:40px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1040px;margin:0 auto}
+header{
+  position:relative;padding-block:8px 32px;margin-bottom:8px;
+  border-bottom:1px solid var(--line);overflow:hidden;
+}
+header::after{
+  content:"";position:absolute;right:-90px;top:-70px;width:300px;height:300px;border-radius:50%;
+  background:repeating-radial-gradient(circle,var(--groove) 0 1px,transparent 1px 6px);
+  mask-image:radial-gradient(circle,#000 0 60%,transparent 72%);
+  -webkit-mask-image:radial-gradient(circle,#000 0 60%,transparent 72%);
+  pointer-events:none;
+}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+h1{font-size:clamp(2rem,6vw,3.25rem);line-height:1.05;font-weight:800;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance;position:relative}
+.lede{max-width:60ch;color:var(--muted);margin:0;position:relative}
+.note{font-family:var(--font-mono);font-size:12.5px;color:var(--muted);margin:16px 0 0;position:relative}
+h2{
+  font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);margin:36px 0 14px;
+}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:14px}
+.card{
+  display:flex;flex-direction:column;gap:10px;min-width:0;
+  background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;
+  color:inherit;text-decoration:none;
+}
+a.card{transition:border-color .15s,transform .15s}
+a.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+a.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card h3{font-size:18px;line-height:1.25;font-weight:600;margin:0;text-wrap:balance}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.meta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:6px;font-family:var(--font-mono);font-size:12px}
+.file{color:var(--muted);overflow-wrap:anywhere;min-width:0}
+.open{color:var(--accent);font-weight:500;white-space:nowrap}
+.pending{border-style:dashed}
+.pending .open{color:var(--muted)}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+footer a{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){a.card{transition:none}a.card:hover{transform:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Balle-Clorin · Streamlit apps</p>
+    <h1>Vinyl Measurement Tools</h1>
+    <p class="lede">Browser-based analyzers for cartridge alignment, tonearm resonance and turntable speed stability. Upload a recording, get the numbers.</p>
+    <p class="note">Free-tier Streamlit apps sleep when idle. If you see a "wake up" button, press it and wait a few seconds.</p>
+  </header>
+  <main id="apps"></main>
+  <footer>Source for each app is on <a href="https://github.com/Balle-Clorin">GitHub</a>. Licensed PolyForm Noncommercial.</footer>
+</div>
+
+<script>
+/* Edit this list: set url to the app's address and the card becomes a link. */
+const APPS = [
+  { group:"Alignment and geometry", name:"Arc Protractor Generator", file:"arc-protractor",
+    desc:"Printable alignment protractor with fixed effective length and a pivot-to-spindle you set yourself. A4 by default.",
+    url:"https://arc-protractor.streamlit.app" },
+  { group:"Alignment and geometry", name:"Tracking Angle (Bauer)", file:"tracking-angle-bauer",
+    desc:"Tonearm geometry after Bauer (1945): tracking angle curves, skating force and second-order distortion.",
+    url:"https://tracking-angle-bauer.streamlit.app" },
+  { group:"Vertical tracking angle", name:"VTA Analyser", file:"vta-analyser",
+    desc:"Vertical tracking angle from the CBS STR-112 FM method, with two calibration modes.",
+    url:"https://vta-analyser.streamlit.app" },
+  { group:"Vertical tracking angle", name:"DIN 45452 VTA Analyser", file:"din-45452-vta-analyser",
+    desc:"VTA from the 361 and 633 Hz tones of the DIN 45452 test record.",
+    url:"https://din-45452-vta-analyser.streamlit.app" },
+  { group:"Azimuth, zenith and crosstalk", name:"MEROLEMEZ Azimuth", file:"merolemez-azim",
+    desc:"Azimuth and crosstalk analysis of the MEROLEMEZ test record, separating VTA mismatch from true azimuth error.",
+    url:"https://merolemez-azim.streamlit.app" },
+  { group:"Azimuth, zenith and crosstalk", name:"Zenith from Toshiba Pulse Train", file:"zenith-by-toshiba-lf9001r-pulsetrain",
+    desc:"Left/right timing offset from the Toshiba pulse train, giving zenith (HTA) with sub-sample precision.",
+    url:"https://zenith-by-toshiba-lf9001r-pulsetrain.streamlit.app" },
+  { group:"Azimuth, zenith and crosstalk", name:"Multitrack Crosstalk", file:"multitrack-crosstalk",
+    desc:"Channel crosstalk measured track by track from a multitrack test recording.",
+    url:"https://multitrack-crosstalk.streamlit.app" },
+  { group:"Tracking and resonance", name:"Vinyl Tracking Test", file:"vinyl-tracking-test",
+    desc:"Finds the tracks on a tracking test record and analyses how well the cartridge follows them.",
+    url:"https://vinyl-tracking-test.streamlit.app" },
+  { group:"Tracking and resonance", name:"Cartridge and Tonearm Resonance", file:"cartridge-tonearm-resonance",
+    desc:"Low-frequency tonearm and cartridge resonance from a chirp or from music.",
+    url:"https://cartridge-tonearm-resonance.streamlit.app" },
+  { group:"Speed stability", name:"Gyro Wow and Flutter", file:"gyro-wow-and-flutter-dual-mode",
+    desc:"Wow and flutter from iPhone gyroscope CSV data or from a recorded WAV, with AES6 / DIN 45507 / IEC 60386 weighting.",
+    url:"https://gyro-wow-and-flutter-dual-mode.streamlit.app" }
+];
+
+const root = document.getElementById("apps");
+const groups = [...new Set(APPS.map(a => a.group))];
+for (const g of groups) {
+  const h = document.createElement("h2"); h.textContent = g; root.appendChild(h);
+  const grid = document.createElement("div"); grid.className = "grid";
+  for (const a of APPS.filter(x => x.group === g)) {
+    const live = !!a.url;
+    const el = document.createElement(live ? "a" : "div");
+    el.className = "card" + (live ? "" : " pending");
+    if (live) { el.href = a.url; el.target = "_blank"; el.rel = "noopener"; }
+    const h3 = document.createElement("h3"); h3.textContent = a.name;
+    const p = document.createElement("p"); p.textContent = a.desc;
+    const m = document.createElement("div"); m.className = "meta";
+    const f = document.createElement("span"); f.className = "file"; f.textContent = a.file;
+    const o = document.createElement("span"); o.className = "open"; o.textContent = live ? "Open app ↗" : "Link to be added";
+    m.append(f, o);
+    el.append(h3, p, m);
+    grid.appendChild(el);
+  }
+  root.appendChild(grid);
+}
+</script>
+</body>
+</html>
